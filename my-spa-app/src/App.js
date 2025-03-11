@@ -8,16 +8,13 @@ function Register({ setUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Načtení existujících uživatelů
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Kontrola, zda uživatel existuje
     if (users.some((user) => user.username === formData.username)) {
       alert("Uživatel už existuje!");
       return;
     }
 
-    // Přidání nového uživatele
     users.push(formData);
     localStorage.setItem("users", JSON.stringify(users));
     alert("Registrace úspěšná!");
@@ -55,10 +52,8 @@ function Login({ setUser }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Načtení uživatelů
     let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Ověření přihlašovacích údajů
     const user = users.find((u) => u.username === formData.username && u.password === formData.password);
     if (!user) {
       alert("Špatné jméno nebo heslo!");
@@ -92,8 +87,20 @@ function Login({ setUser }) {
   );
 }
 
-function Dashboard({ user }) {
-  return <h2>Vítej, {user}!</h2>;
+function Dashboard({ user, setUser }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    setUser(null);
+    navigate("/login");
+  };
+
+  return (
+    <div>
+      <h2>Vítej, {user}!</h2>
+      <button onClick={handleLogout}>Odhlásit se</button>
+    </div>
+  );
 }
 
 function App() {
@@ -108,7 +115,7 @@ function App() {
         <Routes>
           <Route path="/register" element={<Register setUser={setUser} />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
-          <Route path="/dashboard" element={user ? <Dashboard user={user} /> : <Login setUser={setUser} />} />
+          <Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} /> : <Login setUser={setUser} />} />
         </Routes>
       </div>
     </Router>
