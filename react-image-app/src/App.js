@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+const API_URL = "https://spaaplikacereact.onrender.com"; // Upravte podle URL serveru po nasazení
+
 function Register({ setUser }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const navigate = useNavigate();
@@ -9,7 +11,7 @@ function Register({ setUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/register', formData);
+      const response = await axios.post(`${API_URL}/register`, formData);
       alert(response.data);
       if (response.status === 200) {
         setUser(formData.username);
@@ -45,11 +47,11 @@ function Register({ setUser }) {
 function Login({ setUser }) {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const navigate = useNavigate();
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', formData);
+      const response = await axios.post(`${API_URL}/login`, formData);
       alert(response.data);
       if (response.status === 200) {
         setUser(formData.username);
@@ -59,7 +61,7 @@ function Login({ setUser }) {
       alert(error.response.data);
     }
   };
-
+ 
   return (
     <div>
       <h2>Přihlášení</h2>
@@ -81,41 +83,41 @@ function Login({ setUser }) {
     </div>
   );
 }
-
+ 
 function Dashboard({ user }) {
   const [imageUrl, setImageUrl] = useState("");
   const [images, setImages] = useState([]);
-
+ 
   useEffect(() => {
     const fetchImages = async () => {
-      const response = await axios.get('http://localhost:5000/images');
+      const response = await axios.get(`${API_URL}/images`);
       setImages(response.data);
     };
-
+ 
     fetchImages();
   }, []);
-
+ 
   const handleAddImage = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/addImage', { username: user, imageUrl });
+      const response = await axios.post(`${API_URL}/addImage`, { username: user, imageUrl });
       alert(response.data);
       setImages([...images, { username: user, imageUrl }]);
     } catch (error) {
       alert(error.response.data);
     }
   };
-
+ 
   const handleDeleteImage = async (image) => {
     try {
-      const response = await axios.post('http://localhost:5000/deleteImage', { username: user, imageUrl: image.imageUrl });
+      const response = await axios.post(`${API_URL}/deleteImage`, { username: user, imageUrl: image.imageUrl });
       alert(response.data);
       setImages(images.filter(img => img.imageUrl !== image.imageUrl));
     } catch (error) {
       alert(error.response.data);
     }
   };
-
+ 
   return (
     <div>
       <h2>Vítej, {user}!</h2>
@@ -140,6 +142,8 @@ function Dashboard({ user }) {
     </div>
   );
 }
+ 
+// ... Další komponenty (Login, Dashboard) jsou podobně upravené s použitím `${API_URL}` místo `http://localhost:5000`
 
 function App() {
   const [user, setUser] = useState(null);
